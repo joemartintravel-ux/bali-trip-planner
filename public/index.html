@@ -120,16 +120,11 @@
   }
   .slideshow-track {
     display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    gap: 0;
+    transition: transform 0.5s ease;
+    will-change: transform;
   }
-  .slideshow-track::-webkit-scrollbar { display: none; }
   .slideshow-slide {
     flex: 0 0 100%;
-    scroll-snap-align: center;
     height: 480px;
   }
   .slideshow-slide img {
@@ -565,30 +560,15 @@ slides.forEach((_, i) => {
 
 function goToSlide(i) {
   currentSlide = i;
-  slides[i].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-  updateDots();
-}
-
-function slideBy(dir) {
-  currentSlide = (currentSlide + dir + slides.length) % slides.length;
-  goToSlide(currentSlide);
-}
-
-function updateDots() {
-  dotsContainer.querySelectorAll('.slideshow-dot').forEach((d, i) => {
-    d.classList.toggle('active', i === currentSlide);
+  track.style.transform = `translateX(-${i * 100}%)`;
+  dotsContainer.querySelectorAll('.slideshow-dot').forEach((d, j) => {
+    d.classList.toggle('active', j === i);
   });
 }
 
-track.addEventListener('scroll', () => {
-  const scrollLeft = track.scrollLeft;
-  const slideWidth = track.offsetWidth;
-  const newSlide = Math.round(scrollLeft / slideWidth);
-  if (newSlide !== currentSlide && newSlide >= 0 && newSlide < slides.length) {
-    currentSlide = newSlide;
-    updateDots();
-  }
-});
+function slideBy(dir) {
+  goToSlide((currentSlide + dir + slides.length) % slides.length);
+}
 
 // Auto-advance every 4 seconds
 setInterval(() => { slideBy(1); }, 4000);
