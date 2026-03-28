@@ -111,28 +111,84 @@
   .response-rsvp.rsvp-no { background: var(--red-soft); color: #D4818A; }
   .response-dates { font-size: 12px; color: var(--stone); margin-left: 12px; }
 
-  /* Photo gallery */
-  .photo-gallery {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: auto auto;
-    gap: 6px;
+  /* Photo slideshow */
+  .photo-slideshow {
     margin-bottom: 48px;
     border-radius: 14px;
     overflow: hidden;
+    position: relative;
   }
-  .photo-gallery img {
+  .slideshow-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0;
+  }
+  .slideshow-track::-webkit-scrollbar { display: none; }
+  .slideshow-slide {
+    flex: 0 0 100%;
+    scroll-snap-align: center;
+    height: 380px;
+  }
+  .slideshow-slide img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
   }
-  .photo-gallery .photo-wide {
-    grid-column: span 2;
+  .slideshow-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 0;
+    background: var(--midnight);
   }
-  .photo-gallery .photo-item {
-    min-height: 180px;
-    overflow: hidden;
+  .slideshow-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--charcoal);
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    padding: 0;
+  }
+  .slideshow-dot.active {
+    background: var(--palm-gold);
+  }
+  .slideshow-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(10,10,10,0.6);
+    border: 1px solid var(--charcoal);
+    color: var(--cream);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    z-index: 2;
+  }
+  .slideshow-arrow:hover { background: rgba(10,10,10,0.85); }
+  .slideshow-arrow.prev { left: 12px; }
+  .slideshow-arrow.next { right: 12px; }
+
+  /* Blocked dates */
+  .cal-day.blocked {
+    opacity: 0.25;
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+  .cal-day.blocked:hover {
+    background: var(--dusk);
+    border-color: transparent;
   }
 
   /* Trip details */
@@ -211,13 +267,19 @@
   </div>
   <div class="page">
 
-    <!-- Photo Gallery -->
-    <div class="photo-gallery">
-      <div class="photo-item photo-wide"><img src="photos/villa-lounge.jpg" alt="Villa lounge and mastermind space"></div>
-      <div class="photo-item"><img src="photos/villa-pool.jpg" alt="Private villa pool"></div>
-      <div class="photo-item"><img src="photos/mastermind-session.jpg" alt="Mastermind session"></div>
-      <div class="photo-item"><img src="photos/beach-club.jpg" alt="Bali beach club"></div>
-      <div class="photo-item photo-wide"><img src="photos/sunset-group.jpg" alt="Group sunset dinner"></div>
+    <!-- Photo Slideshow -->
+    <div class="photo-slideshow">
+      <button class="slideshow-arrow prev" onclick="slideBy(-1)">&#8249;</button>
+      <button class="slideshow-arrow next" onclick="slideBy(1)">&#8250;</button>
+      <div class="slideshow-track" id="slideshowTrack">
+        <div class="slideshow-slide"><img src="photos/villa-lounge.jpg" alt="Villa lounge and mastermind space"></div>
+        <div class="slideshow-slide"><img src="photos/sunset-group.jpg" alt="Group sunset dinner"></div>
+        <div class="slideshow-slide"><img src="photos/villa-pool.jpg" alt="Private villa pool"></div>
+        <div class="slideshow-slide"><img src="photos/mastermind-session.jpg" alt="Mastermind session"></div>
+        <div class="slideshow-slide"><img src="photos/beach-club.jpg" alt="Bali beach club"></div>
+        <div class="slideshow-slide"><img src="photos/villa-interior.jpg" alt="Villa interior"></div>
+      </div>
+      <div class="slideshow-dots" id="slideshowDots"></div>
     </div>
 
     <!-- Trip Description -->
@@ -225,19 +287,19 @@
       <div class="section-label">The Trip</div>
       <div class="section-title">3 Days, 2 Nights in Bali</div>
       <p class="trip-intro">
-        We're getting a group of Nomad Circle members together for a few days in Bali. The plan is simple — stay in a quality villa, run some mastermind sessions, get to know each other properly, and make the most of what Bali has to offer. No fluff, no over-produced itinerary. Just a good group of people, good conversations, and a few days you'll remember.
+        We're getting a group of Nomad Circle members together for a few days in Bali. The plan is simple — stay in a quality villa, run some mastermind sessions, get to know each other properly, and make the most of what Bali has to offer.
       </p>
 
       <div class="trip-highlights">
         <div class="highlight-card">
           <span class="highlight-icon">&#9670;</span>
           <div class="highlight-title">Mastermind Sessions</div>
-          <div class="highlight-desc">Focused sessions where you can share what you're working on, get feedback, and learn from the room.</div>
+          <div class="highlight-desc">Focused sessions on outreach, sales, and networking — share what you're working on, get feedback, and sharpen your approach.</div>
         </div>
         <div class="highlight-card">
           <span class="highlight-icon">&#9670;</span>
           <div class="highlight-title">Networking</div>
-          <div class="highlight-desc">Meet other entrepreneurs and location-independent professionals in a relaxed, no-pressure setting.</div>
+          <div class="highlight-desc">Connect with other Nomad Circle members in person — build real relationships with people already in the community.</div>
         </div>
         <div class="highlight-card">
           <span class="highlight-icon">&#9670;</span>
@@ -350,7 +412,11 @@ function renderCalendar(id, year, month, maxDay) {
     const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
     e.dataset.date = ds;
     if (selectedDates.has(ds)) e.classList.add('selected');
-    e.addEventListener('click', () => { if (selectedDates.has(ds)) { selectedDates.delete(ds); e.classList.remove('selected'); } else { selectedDates.add(ds); e.classList.add('selected'); } updateBtn(); });
+    if (typeof BLOCKED_DATES !== 'undefined' && BLOCKED_DATES.has(ds)) {
+      e.classList.add('blocked');
+    } else {
+      e.addEventListener('click', () => { if (selectedDates.has(ds)) { selectedDates.delete(ds); e.classList.remove('selected'); } else { selectedDates.add(ds); e.classList.add('selected'); } updateBtn(); });
+    }
     c.appendChild(e);
   }
 }
@@ -477,8 +543,54 @@ function renderHeatmap(id, year, month, maxDay, dateCounts, maxCount, best) {
 
 function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
+// Blocked dates (unavailable)
+const BLOCKED_DATES = new Set(['2026-05-15', '2026-05-16', '2026-05-17', '2026-05-18']);
+
 renderCalendar('calMay', 2026, 4);
 renderCalendar('calJune', 2026, 5, 7);
+
+// Slideshow
+const track = document.getElementById('slideshowTrack');
+const slides = track.querySelectorAll('.slideshow-slide');
+const dotsContainer = document.getElementById('slideshowDots');
+let currentSlide = 0;
+
+slides.forEach((_, i) => {
+  const dot = document.createElement('button');
+  dot.className = 'slideshow-dot' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsContainer.appendChild(dot);
+});
+
+function goToSlide(i) {
+  currentSlide = i;
+  slides[i].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  updateDots();
+}
+
+function slideBy(dir) {
+  currentSlide = (currentSlide + dir + slides.length) % slides.length;
+  goToSlide(currentSlide);
+}
+
+function updateDots() {
+  dotsContainer.querySelectorAll('.slideshow-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === currentSlide);
+  });
+}
+
+track.addEventListener('scroll', () => {
+  const scrollLeft = track.scrollLeft;
+  const slideWidth = track.offsetWidth;
+  const newSlide = Math.round(scrollLeft / slideWidth);
+  if (newSlide !== currentSlide && newSlide >= 0 && newSlide < slides.length) {
+    currentSlide = newSlide;
+    updateDots();
+  }
+});
+
+// Auto-advance every 4 seconds
+setInterval(() => { slideBy(1); }, 4000);
 </script>
 </body>
 </html>
