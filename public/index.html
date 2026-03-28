@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bali Trip — The Nomad Circle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --midnight: #0A0A0A; --dusk: #1E1E1E; --charcoal: #2E2E2E;
+    --stone: #7A7065; --sand: #D4C8B8; --cream: #F0EAE0; --white: #FAFAF8;
+    --palm-gold: #C4963A; --palm-gold-light: #E0B55A; --palm-gold-muted: #6B5020;
+    --green: #4A7A5A; --green-soft: rgba(74,122,90,0.25);
+    --amber: #B8860B; --amber-soft: rgba(184,134,11,0.25);
+    --red: #8B4049; --red-soft: rgba(139,64,73,0.2);
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body { background: var(--midnight); color: var(--cream); font-family: var(--font-body); line-height: 1.6; -webkit-font-smoothing: antialiased; min-height: 100vh; }
+  .page { max-width: 820px; margin: 0 auto; padding: 0 24px 80px; }
+
+  /* Hero */
+  .hero { text-align: center; padding: 60px 24px 40px; position: relative; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 80%, rgba(196,150,58,0.08) 0%, transparent 70%); pointer-events: none; }
+  .hero-label { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--palm-gold); margin-bottom: 16px; }
+  .hero-title { font-family: var(--font-display); font-size: clamp(36px,7vw,56px); font-weight: 400; color: var(--cream); line-height: 1.1; margin-bottom: 16px; }
+  .hero-sub { font-size: 15px; color: var(--sand); max-width: 500px; margin: 0 auto; line-height: 1.7; }
+
+  /* Sections */
+  .section { margin-top: 48px; padding-top: 48px; border-top: 1px solid var(--charcoal); }
+  .section-label { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--palm-gold); margin-bottom: 24px; }
+  .section-title { font-family: var(--font-display); font-size: 28px; font-weight: 400; color: var(--cream); margin-bottom: 8px; }
+  .section-desc { font-size: 14px; color: var(--stone); margin-bottom: 24px; }
+
+  /* Name */
+  .name-input-wrap label { display: block; font-size: 13px; font-weight: 500; color: var(--sand); margin-bottom: 8px; }
+  .name-input { width: 100%; max-width: 360px; padding: 12px 16px; background: var(--dusk); border: 1px solid var(--charcoal); border-radius: 8px; color: var(--cream); font-family: var(--font-body); font-size: 15px; outline: none; transition: border-color 0.2s; }
+  .name-input:focus { border-color: var(--palm-gold); }
+  .name-input::placeholder { color: var(--stone); }
+
+  /* RSVP */
+  .rsvp-options { display: flex; gap: 12px; flex-wrap: wrap; }
+  .rsvp-btn { flex: 1; min-width: 140px; padding: 16px 20px; background: var(--dusk); border: 1px solid var(--charcoal); border-radius: 10px; color: var(--cream); font-family: var(--font-body); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: center; }
+  .rsvp-btn:hover { border-color: var(--stone); background: var(--charcoal); }
+  .rsvp-btn.selected-yes { background: var(--green-soft); border-color: var(--green); color: #8FD9A0; }
+  .rsvp-btn.selected-maybe { background: var(--amber-soft); border-color: var(--amber); color: var(--palm-gold-light); }
+  .rsvp-btn.selected-no { background: var(--red-soft); border-color: var(--red); color: #D4818A; }
+  .rsvp-emoji { display: block; font-size: 24px; margin-bottom: 6px; }
+
+  /* Calendar */
+  .calendar-wrap { display: flex; flex-direction: column; gap: 32px; }
+  .cal-month-title { font-family: var(--font-display); font-size: 22px; font-weight: 400; color: var(--cream); margin-bottom: 12px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
+  .cal-day-header { text-align: center; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--stone); padding: 8px 0; }
+  .cal-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 14px; font-weight: 500; color: var(--sand); cursor: pointer; transition: all 0.15s; background: var(--dusk); border: 1px solid transparent; }
+  .cal-day:hover { border-color: var(--stone); background: var(--charcoal); }
+  .cal-day.selected { background: rgba(196,150,58,0.2); border-color: var(--palm-gold); color: var(--palm-gold-light); }
+  .cal-day.empty { background: transparent; cursor: default; border: none; }
+  .cal-day.empty:hover { background: transparent; border: none; }
+
+  .legend { display: flex; gap: 20px; margin-top: 16px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--stone); }
+  .legend-swatch { width: 14px; height: 14px; border-radius: 4px; }
+
+  /* Submit */
+  .submit-wrap { margin-top: 48px; text-align: center; }
+  .submit-btn { padding: 16px 48px; background: var(--palm-gold); color: var(--midnight); border: none; border-radius: 10px; font-family: var(--font-body); font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .submit-btn:hover { background: var(--palm-gold-light); transform: translateY(-1px); }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .submit-msg { margin-top: 16px; font-size: 14px; }
+  .submit-msg.success { color: var(--green); }
+  .submit-msg.error { color: #D4818A; }
+
+  /* Dashboard */
+  .dashboard { display: none; }
+  .dashboard.visible { display: block; }
+  .dash-toggle { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; background: var(--dusk); border: 1px solid var(--charcoal); border-radius: 10px; color: var(--palm-gold); font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; z-index: 100; }
+  .dash-toggle:hover { border-color: var(--palm-gold); background: var(--charcoal); }
+
+  .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 32px; }
+  .stat-card { background: var(--dusk); border: 1px solid var(--charcoal); border-radius: 10px; padding: 20px; text-align: center; }
+  .stat-number { font-family: var(--font-display); font-size: 36px; font-weight: 400; color: var(--cream); line-height: 1; margin-bottom: 4px; }
+  .stat-label { font-size: 12px; color: var(--stone); text-transform: uppercase; letter-spacing: 1px; }
+
+  .heat-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
+  .heat-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; font-size: 13px; color: var(--sand); background: var(--dusk); }
+  .heat-day.empty { background: transparent; }
+  .heat-count { font-family: var(--font-mono); font-size: 10px; color: var(--stone); margin-top: 2px; }
+  .heat-day.hot-1 { background: rgba(196,150,58,0.1); }
+  .heat-day.hot-2 { background: rgba(196,150,58,0.2); }
+  .heat-day.hot-3 { background: rgba(196,150,58,0.35); color: var(--palm-gold-light); }
+  .heat-day.hot-4 { background: rgba(196,150,58,0.5); color: var(--palm-gold-light); }
+  .heat-day.hot-5 { background: var(--palm-gold); color: var(--midnight); }
+  .heat-day.best-window { outline: 2px solid var(--palm-gold-light); outline-offset: 1px; }
+
+  .best-window-card { background: var(--dusk); border: 1px solid var(--palm-gold-muted); border-radius: 12px; padding: 24px; margin-top: 32px; text-align: center; }
+  .bw-label { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--palm-gold); margin-bottom: 8px; }
+  .bw-dates { font-family: var(--font-display); font-size: 28px; color: var(--cream); margin-bottom: 4px; }
+  .bw-people { font-size: 14px; color: var(--sand); }
+
+  .responses-list { margin-top: 32px; }
+  .response-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--dusk); border-radius: 8px; margin-bottom: 6px; border: 1px solid var(--charcoal); }
+  .response-name { font-weight: 500; color: var(--cream); font-size: 14px; }
+  .response-rsvp { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; }
+  .response-rsvp.rsvp-yes { background: var(--green-soft); color: #8FD9A0; }
+  .response-rsvp.rsvp-maybe { background: var(--amber-soft); color: var(--palm-gold-light); }
+  .response-rsvp.rsvp-no { background: var(--red-soft); color: #D4818A; }
+  .response-dates { font-size: 12px; color: var(--stone); margin-left: 12px; }
+
+  @media (max-width: 600px) {
+    .page { padding: 0 16px 60px; }
+    .hero { padding: 40px 16px 24px; }
+    .rsvp-options { flex-direction: column; }
+    .rsvp-btn { min-width: 100%; }
+    .stats-row { grid-template-columns: 1fr; }
+    .cal-day, .heat-day { font-size: 12px; border-radius: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- MEMBER VIEW -->
+<div id="memberView">
+  <div class="hero">
+    <div class="hero-label">The Nomad Circle</div>
+    <div class="hero-title">Bali Trip</div>
+    <div class="hero-sub">We're planning a 3-day, 2-night trip in Bali. Let us know if you can make it and when you're available — we'll find the best dates for everyone.</div>
+  </div>
+  <div class="page">
+    <div class="name-input-wrap">
+      <label>Your name</label>
+      <input type="text" class="name-input" id="nameInput" placeholder="e.g. Joe Martin" autocomplete="name">
+    </div>
+
+    <div class="section">
+      <div class="section-label">01 — RSVP</div>
+      <div class="section-title">Can you make it?</div>
+      <div class="section-desc">No pressure — just let us know where you stand.</div>
+      <div class="rsvp-options">
+        <button class="rsvp-btn" data-rsvp="yes" onclick="selectRSVP('yes')"><span class="rsvp-emoji">&#10003;</span>I'm in</button>
+        <button class="rsvp-btn" data-rsvp="maybe" onclick="selectRSVP('maybe')"><span class="rsvp-emoji">&#8764;</span>Maybe</button>
+        <button class="rsvp-btn" data-rsvp="no" onclick="selectRSVP('no')"><span class="rsvp-emoji">&#10005;</span>Can't make it</button>
+      </div>
+    </div>
+
+    <div id="calendarSection" class="section">
+      <div class="section-label">02 — Availability</div>
+      <div class="section-title">When are you free?</div>
+      <div class="section-desc">Tap every date you'd be available. We'll find the 3-day window that works for the most people.</div>
+      <div class="calendar-wrap">
+        <div><div class="cal-month-title">May 2026</div><div class="cal-grid" id="calMay"></div></div>
+        <div><div class="cal-month-title">June 2026</div><div class="cal-grid" id="calJune"></div></div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-swatch" style="background:var(--dusk);border:1px solid var(--charcoal)"></div>Not selected</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:rgba(196,150,58,0.2);border:1px solid var(--palm-gold)"></div>Available</div>
+      </div>
+    </div>
+
+    <div class="submit-wrap">
+      <button class="submit-btn" id="submitBtn" onclick="submitResponse()" disabled>Submit your availability</button>
+      <div id="submitMsg" class="submit-msg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD VIEW -->
+<div id="dashView" class="dashboard">
+  <div class="hero">
+    <div class="hero-label">Admin Dashboard</div>
+    <div class="hero-title">Trip Overview</div>
+  </div>
+  <div class="page">
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-number" id="statYes">0</div><div class="stat-label">Confirmed</div></div>
+      <div class="stat-card"><div class="stat-number" id="statMaybe">0</div><div class="stat-label">Maybe</div></div>
+      <div class="stat-card"><div class="stat-number" id="statNo">0</div><div class="stat-label">Can't make it</div></div>
+    </div>
+    <div id="bestWindowCard" class="best-window-card" style="display:none">
+      <div class="bw-label">Best 3-Day Window</div>
+      <div class="bw-dates" id="bwDates">—</div>
+      <div class="bw-people" id="bwPeople"></div>
+    </div>
+    <div class="section">
+      <div class="section-label">Availability Heatmap</div>
+      <div class="section-desc">Brighter = more people available. Gold outline = best 3-day window.</div>
+      <div class="calendar-wrap">
+        <div><div class="cal-month-title">May 2026</div><div class="heat-grid" id="heatMay"></div></div>
+        <div><div class="cal-month-title">June 2026</div><div class="heat-grid" id="heatJune"></div></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">All Responses</div>
+      <div id="responsesList" class="responses-list"></div>
+    </div>
+  </div>
+</div>
+
+<button class="dash-toggle" id="dashToggle" onclick="toggleDashboard()">Dashboard</button>
+
+<script>
+let selectedRSVP = null;
+let selectedDates = new Set();
+let showingDashboard = false;
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+function renderCalendar(id, year, month, maxDay) {
+  const c = document.getElementById(id);
+  c.innerHTML = '';
+  DAYS.forEach(d => { const e = document.createElement('div'); e.className = 'cal-day-header'; e.textContent = d; c.appendChild(e); });
+  const first = new Date(year, month, 1);
+  let start = first.getDay(); start = start === 0 ? 6 : start - 1;
+  const total = new Date(year, month + 1, 0).getDate();
+  const last = maxDay ? Math.min(maxDay, total) : total;
+  for (let i = 0; i < start; i++) { const e = document.createElement('div'); e.className = 'cal-day empty'; c.appendChild(e); }
+  for (let day = 1; day <= last; day++) {
+    const e = document.createElement('div');
+    e.className = 'cal-day';
+    e.textContent = day;
+    const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    e.dataset.date = ds;
+    if (selectedDates.has(ds)) e.classList.add('selected');
+    e.addEventListener('click', () => { if (selectedDates.has(ds)) { selectedDates.delete(ds); e.classList.remove('selected'); } else { selectedDates.add(ds); e.classList.add('selected'); } updateBtn(); });
+    c.appendChild(e);
+  }
+}
+
+function selectRSVP(v) {
+  selectedRSVP = v;
+  document.querySelectorAll('.rsvp-btn').forEach(b => { b.classList.remove('selected-yes','selected-maybe','selected-no'); if (b.dataset.rsvp === v) b.classList.add('selected-' + v); });
+  updateBtn();
+}
+
+function updateBtn() {
+  document.getElementById('submitBtn').disabled = !(document.getElementById('nameInput').value.trim() && selectedRSVP);
+}
+document.getElementById('nameInput').addEventListener('input', updateBtn);
+
+async function submitResponse() {
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name || !selectedRSVP) return;
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+  try {
+    const res = await fetch('/api/responses', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, rsvp: selectedRSVP, dates: Array.from(selectedDates).sort() })
+    });
+    if (!res.ok) throw new Error('Server error');
+    document.getElementById('submitMsg').textContent = "You're locked in. Thanks!";
+    document.getElementById('submitMsg').className = 'submit-msg success';
+    btn.textContent = 'Submitted';
+  } catch (e) {
+    document.getElementById('submitMsg').textContent = 'Something went wrong — try again.';
+    document.getElementById('submitMsg').className = 'submit-msg error';
+    btn.disabled = false;
+    btn.textContent = 'Submit your availability';
+  }
+}
+
+async function toggleDashboard() {
+  showingDashboard = !showingDashboard;
+  document.getElementById('memberView').style.display = showingDashboard ? 'none' : 'block';
+  document.getElementById('dashView').classList.toggle('visible', showingDashboard);
+  document.getElementById('dashToggle').textContent = showingDashboard ? 'Back to form' : 'Dashboard';
+  if (showingDashboard) {
+    try {
+      const res = await fetch('/api/responses');
+      const data = await res.json();
+      renderDashboard(data);
+    } catch (e) { console.error(e); }
+  }
+}
+
+function renderDashboard(responses) {
+  document.getElementById('statYes').textContent = responses.filter(r => r.rsvp === 'yes').length;
+  document.getElementById('statMaybe').textContent = responses.filter(r => r.rsvp === 'maybe').length;
+  document.getElementById('statNo').textContent = responses.filter(r => r.rsvp === 'no').length;
+
+  const dateCounts = {};
+  responses.forEach(r => { if (r.rsvp === 'no') return; (r.dates || []).forEach(d => { dateCounts[d] = (dateCounts[d] || 0) + 1; }); });
+  const maxCount = Math.max(1, ...Object.values(dateCounts), 1);
+  const best = findBestWindow(dateCounts, 3);
+
+  renderHeatmap('heatMay', 2026, 4, null, dateCounts, maxCount, best);
+  renderHeatmap('heatJune', 2026, 5, 7, dateCounts, maxCount, best);
+
+  if (best) {
+    document.getElementById('bestWindowCard').style.display = 'block';
+    const s = new Date(best.dates[0] + 'T12:00:00');
+    const e = new Date(best.dates[2] + 'T12:00:00');
+    const fmt = { month: 'short', day: 'numeric' };
+    document.getElementById('bwDates').textContent = s.toLocaleDateString('en-GB', fmt) + ' — ' + e.toLocaleDateString('en-GB', fmt);
+    document.getElementById('bwPeople').textContent = best.score + ' people available across all 3 days';
+  } else {
+    document.getElementById('bestWindowCard').style.display = 'none';
+  }
+
+  const list = document.getElementById('responsesList');
+  list.innerHTML = '';
+  responses.sort((a, b) => { const o = { yes: 0, maybe: 1, no: 2 }; return (o[a.rsvp]||0) - (o[b.rsvp]||0); }).forEach(r => {
+    const row = document.createElement('div');
+    row.className = 'response-row';
+    const dc = (r.dates || []).length;
+    row.innerHTML = `<div><span class="response-name">${esc(r.name)}</span><span class="response-dates">${dc} date${dc!==1?'s':''}</span></div><span class="response-rsvp rsvp-${r.rsvp}">${r.rsvp}</span>`;
+    list.appendChild(row);
+  });
+}
+
+function findBestWindow(dateCounts, size) {
+  const all = [];
+  const s = new Date('2026-05-01'), e = new Date('2026-06-07');
+  for (let d = new Date(s); d <= e; d.setDate(d.getDate() + 1)) all.push(d.toISOString().split('T')[0]);
+  let bestScore = 0, bestDates = null;
+  for (let i = 0; i <= all.length - size; i++) {
+    const w = all.slice(i, i + size);
+    const score = Math.min(...w.map(d => dateCounts[d] || 0));
+    if (score > bestScore) { bestScore = score; bestDates = w; }
+  }
+  return bestDates ? { dates: bestDates, score: bestScore } : null;
+}
+
+function renderHeatmap(id, year, month, maxDay, dateCounts, maxCount, best) {
+  const c = document.getElementById(id);
+  c.innerHTML = '';
+  DAYS.forEach(d => { const e = document.createElement('div'); e.className = 'cal-day-header'; e.textContent = d; c.appendChild(e); });
+  const first = new Date(year, month, 1);
+  let start = first.getDay(); start = start === 0 ? 6 : start - 1;
+  const total = new Date(year, month + 1, 0).getDate();
+  const last = maxDay ? Math.min(maxDay, total) : total;
+  for (let i = 0; i < start; i++) { const e = document.createElement('div'); e.className = 'heat-day empty'; c.appendChild(e); }
+  const bw = best ? new Set(best.dates) : new Set();
+  for (let day = 1; day <= last; day++) {
+    const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const count = dateCounts[ds] || 0;
+    let h = '';
+    if (count > 0) { const r = count / maxCount; h = r <= 0.2 ? 'hot-1' : r <= 0.4 ? 'hot-2' : r <= 0.6 ? 'hot-3' : r <= 0.8 ? 'hot-4' : 'hot-5'; }
+    const e = document.createElement('div');
+    e.className = `heat-day ${h}`;
+    if (bw.has(ds)) e.classList.add('best-window');
+    e.innerHTML = `<span>${day}</span><span class="heat-count">${count > 0 ? count : ''}</span>`;
+    c.appendChild(e);
+  }
+}
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+renderCalendar('calMay', 2026, 4);
+renderCalendar('calJune', 2026, 5, 7);
+</script>
+</body>
+</html>
