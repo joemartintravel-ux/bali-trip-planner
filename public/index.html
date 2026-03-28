@@ -111,6 +111,81 @@
   .response-rsvp.rsvp-no { background: var(--red-soft); color: #D4818A; }
   .response-dates { font-size: 12px; color: var(--stone); margin-left: 12px; }
 
+  /* Photo gallery */
+  .photo-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
+    gap: 6px;
+    margin-bottom: 48px;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .photo-gallery img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .photo-gallery .photo-wide {
+    grid-column: span 2;
+  }
+  .photo-gallery .photo-item {
+    min-height: 180px;
+    overflow: hidden;
+  }
+
+  /* Trip details */
+  .trip-details {
+    margin-bottom: 16px;
+  }
+  .trip-details .trip-intro {
+    font-size: 15px;
+    color: var(--sand);
+    line-height: 1.8;
+    margin-bottom: 28px;
+  }
+  .trip-highlights {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .highlight-card {
+    background: var(--dusk);
+    border: 1px solid var(--charcoal);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .highlight-icon {
+    font-size: 22px;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .highlight-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--cream);
+    margin-bottom: 4px;
+  }
+  .highlight-desc {
+    font-size: 13px;
+    color: var(--stone);
+    line-height: 1.5;
+  }
+  .trip-price-note {
+    font-size: 14px;
+    color: var(--sand);
+    background: var(--dusk);
+    border: 1px solid var(--palm-gold-muted);
+    border-radius: 10px;
+    padding: 16px 20px;
+    line-height: 1.6;
+  }
+  .trip-price-note strong {
+    color: var(--palm-gold-light);
+  }
+
   @media (max-width: 600px) {
     .page { padding: 0 16px 60px; }
     .hero { padding: 40px 16px 24px; }
@@ -118,6 +193,10 @@
     .rsvp-btn { min-width: 100%; }
     .stats-row { grid-template-columns: 1fr; }
     .cal-day, .heat-day { font-size: 12px; border-radius: 6px; }
+    .photo-gallery { grid-template-columns: 1fr 1fr; }
+    .photo-gallery .photo-wide { grid-column: span 2; }
+    .photo-gallery .photo-item { min-height: 140px; }
+    .trip-highlights { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -131,7 +210,54 @@
     <div class="hero-sub">We're planning a 3-day, 2-night trip in Bali. Let us know if you can make it and when you're available — we'll find the best dates for everyone.</div>
   </div>
   <div class="page">
-    <div class="name-input-wrap">
+
+    <!-- Photo Gallery -->
+    <div class="photo-gallery">
+      <div class="photo-item photo-wide"><img src="photos/villa-lounge.jpg" alt="Villa lounge and mastermind space"></div>
+      <div class="photo-item"><img src="photos/villa-pool.jpg" alt="Private villa pool"></div>
+      <div class="photo-item"><img src="photos/mastermind-session.jpg" alt="Mastermind session"></div>
+      <div class="photo-item"><img src="photos/beach-club.jpg" alt="Bali beach club"></div>
+      <div class="photo-item photo-wide"><img src="photos/sunset-group.jpg" alt="Group sunset dinner"></div>
+    </div>
+
+    <!-- Trip Description -->
+    <div class="trip-details">
+      <div class="section-label">The Trip</div>
+      <div class="section-title">3 Days, 2 Nights in Bali</div>
+      <p class="trip-intro">
+        We're getting a group of Nomad Circle members together for a few days in Bali. The plan is simple — stay in a quality villa, run some mastermind sessions, get to know each other properly, and make the most of what Bali has to offer. No fluff, no over-produced itinerary. Just a good group of people, good conversations, and a few days you'll remember.
+      </p>
+
+      <div class="trip-highlights">
+        <div class="highlight-card">
+          <span class="highlight-icon">&#9670;</span>
+          <div class="highlight-title">Mastermind Sessions</div>
+          <div class="highlight-desc">Focused sessions where you can share what you're working on, get feedback, and learn from the room.</div>
+        </div>
+        <div class="highlight-card">
+          <span class="highlight-icon">&#9670;</span>
+          <div class="highlight-title">Networking</div>
+          <div class="highlight-desc">Meet other entrepreneurs and location-independent professionals in a relaxed, no-pressure setting.</div>
+        </div>
+        <div class="highlight-card">
+          <span class="highlight-icon">&#9670;</span>
+          <div class="highlight-title">Activities</div>
+          <div class="highlight-desc">Padel, beach days, exploring Bali — plenty of downtime to enjoy the island between sessions.</div>
+        </div>
+        <div class="highlight-card">
+          <span class="highlight-icon">&#9670;</span>
+          <div class="highlight-title">Dinners</div>
+          <div class="highlight-desc">Evening meals together at some of Bali's best spots. Great food, better company.</div>
+        </div>
+      </div>
+
+      <div class="trip-price-note">
+        <strong>Designed to be affordable.</strong> This isn't a luxury retreat with a luxury price tag. We're splitting costs across the group — expect just a few hundred pounds depending on final numbers. The goal is to make it accessible for everyone.
+      </div>
+    </div>
+
+    <!-- RSVP Form -->
+    <div class="name-input-wrap" style="margin-top: 48px; padding-top: 48px; border-top: 1px solid var(--charcoal);">
       <label>Your name</label>
       <input type="text" class="name-input" id="nameInput" placeholder="e.g. Joe Martin" autocomplete="name">
     </div>
